@@ -1,0 +1,36 @@
+{
+  "name": "currency-note-scanner",
+  "version": "1.0.0",
+  "description": "Accessible web application for visually challenged users to scan and identify currency notes with audio feedback",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000 -o",
+    "serve": "npx http-server -p 8000",
+    "deploy:netlify": "netlify deploy --prod",
+    "deploy:vercel": "vercel --prod",
+    "test": "echo 'Open index.html in browser or run: npm start'"
+  },
+  "keywords": [
+    "accessibility",
+    "currency",
+    "scanner",
+    "text-to-speech",
+    "web-speech-api",
+    "camera",
+    "assistive-technology",
+    "wcag",
+    "visually-impaired"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/currency-note-scanner"
+  },
+  "homepage": "https://github.com/yourusername/currency-note-scanner#readme",
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}

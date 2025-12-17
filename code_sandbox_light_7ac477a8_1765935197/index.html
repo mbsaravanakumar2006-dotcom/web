@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Accessible currency note scanner for visually challenged users">
+    <title>Currency Note Scanner</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header role="banner">
+            <h1 class="app-title">Currency Note Scanner</h1>
+            <p class="app-subtitle" aria-label="Application description">Let me help you identify your currency notes</p>
+        </header>
+
+        <!-- Main Content -->
+        <main role="main" id="mainContent">
+            
+            <!-- Welcome Screen -->
+            <section id="welcomeScreen" class="screen active" aria-live="polite">
+                <div class="icon-container" aria-hidden="true">
+                    <svg class="currency-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M18 8v.01M6 8v.01"/>
+                    </svg>
+                </div>
+                
+                <h2 class="screen-title">Welcome!</h2>
+                <p class="instruction-text">
+                    Hold your device steady and point the camera at a currency note. 
+                    I will read out the denomination for you.
+                </p>
+
+                <!-- Main Action Button -->
+                <button 
+                    id="scanButton" 
+                    class="primary-button"
+                    aria-label="Start scanning currency note. You can choose to take a photo or upload an image."
+                >
+                    <span class="button-icon" aria-hidden="true">📷</span>
+                    <span class="button-text">Scan Note</span>
+                </button>
+
+                <p class="help-text" role="note">
+                    Tip: Make sure the note is well-lit and in focus
+                </p>
+            </section>
+
+            <!-- Capture Options Screen -->
+            <section id="captureOptionsScreen" class="screen" aria-live="polite">
+                <h2 class="screen-title">Choose an Option</h2>
+                <p class="instruction-text">
+                    How would you like to scan the note?
+                </p>
+
+                <div class="options-container">
+                    <!-- Camera Option -->
+                    <button 
+                        id="cameraButton" 
+                        class="option-button"
+                        aria-label="Use camera to take a photo of the currency note"
+                    >
+                        <span class="option-icon" aria-hidden="true">📸</span>
+                        <span class="option-title">Take Photo</span>
+                        <span class="option-description">Use your camera</span>
+                    </button>
+
+                    <!-- Upload Option -->
+                    <button 
+                        id="uploadButton" 
+                        class="option-button"
+                        aria-label="Upload an existing photo of the currency note"
+                    >
+                        <span class="option-icon" aria-hidden="true">🖼️</span>
+                        <span class="option-title">Upload Photo</span>
+                        <span class="option-description">Choose from gallery</span>
+                    </button>
+                </div>
+
+                <!-- Hidden File Input -->
+                <input 
+                    type="file" 
+                    id="fileInput" 
+                    accept="image/*" 
+                    aria-label="File input for uploading currency note image"
+                    hidden
+                >
+
+                <button 
+                    id="backToWelcome" 
+                    class="secondary-button"
+                    aria-label="Go back to welcome screen"
+                >
+                    Back
+                </button>
+            </section>
+
+            <!-- Camera Screen -->
+            <section id="cameraScreen" class="screen" aria-live="polite">
+                <h2 class="screen-title visually-hidden">Camera View</h2>
+                <p class="instruction-text">
+                    Position the currency note within the frame
+                </p>
+
+                <div class="camera-container">
+                    <video 
+                        id="cameraVideo" 
+                        autoplay 
+                        playsinline 
+                        webkit-playsinline
+                        aria-label="Live camera view for capturing currency note"
+                    ></video>
+                    <canvas id="captureCanvas" hidden></canvas>
+                    
+                    <!-- Camera Frame Overlay -->
+                    <div class="camera-frame" aria-hidden="true"></div>
+                </div>
+
+                <div class="camera-controls">
+                    <button 
+                        id="captureButton" 
+                        class="primary-button"
+                        aria-label="Capture photo of currency note"
+                    >
+                        <span class="button-icon" aria-hidden="true">📷</span>
+                        <span class="button-text">Capture</span>
+                    </button>
+
+                    <button 
+                        id="cancelCameraButton" 
+                        class="secondary-button"
+                        aria-label="Cancel and return to options"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </section>
+
+            <!-- Processing Screen -->
+            <section id="processingScreen" class="screen" aria-live="polite" aria-busy="true">
+                <div class="spinner-container">
+                    <div class="spinner" role="status" aria-label="Processing image"></div>
+                </div>
+                <h2 class="screen-title">Analyzing Note...</h2>
+                <p class="instruction-text">
+                    Please wait while I identify the denomination
+                </p>
+            </section>
+
+            <!-- Results Screen -->
+            <section id="resultsScreen" class="screen" aria-live="polite">
+                <!-- Image Preview -->
+                <div class="preview-container">
+                    <img 
+                        id="previewImage" 
+                        alt="Preview of scanned currency note" 
+                        class="preview-image"
+                    >
+                </div>
+
+                <!-- Result Display -->
+                <div id="resultContainer" class="result-container">
+                    <!-- Success Result -->
+                    <div id="successResult" class="result-card success" hidden>
+                        <div class="result-icon" aria-hidden="true">✓</div>
+                        <h2 class="result-title">Note Identified!</h2>
+                        <p class="result-denomination" id="denominationText" aria-live="assertive"></p>
+                        <p class="result-message" id="resultMessage"></p>
+                    </div>
+
+                    <!-- Low Confidence Result -->
+                    <div id="lowConfidenceResult" class="result-card warning" hidden>
+                        <div class="result-icon" aria-hidden="true">⚠️</div>
+                        <h2 class="result-title">Not Sure</h2>
+                        <p class="result-message">I'm not sure about this note. Please try again with better lighting and focus.</p>
+                    </div>
+
+                    <!-- Blurry Image Result -->
+                    <div id="blurryResult" class="result-card error" hidden>
+                        <div class="result-icon" aria-hidden="true">⚠️</div>
+                        <h2 class="result-title">Image Unclear</h2>
+                        <p class="result-message">The image is blurry. Please retake the photo with better focus.</p>
+                    </div>
+
+                    <!-- Error Result -->
+                    <div id="errorResult" class="result-card error" hidden>
+                        <div class="result-icon" aria-hidden="true">❌</div>
+                        <h2 class="result-title">Something Went Wrong</h2>
+                        <p class="result-message" id="errorMessage">Please try again.</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <button 
+                        id="scanAgainButton" 
+                        class="primary-button"
+                        aria-label="Scan another currency note"
+                    >
+                        <span class="button-icon" aria-hidden="true">🔄</span>
+                        <span class="button-text">Scan Again</span>
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer role="contentinfo">
+            <p class="footer-text">Designed for accessibility • Camera and microphone permissions required</p>
+        </footer>
+    </div>
+
+    <!-- Alert Container for Announcements -->
+    <div 
+        id="alertContainer" 
+        class="visually-hidden" 
+        role="alert" 
+        aria-live="assertive" 
+        aria-atomic="true"
+    ></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

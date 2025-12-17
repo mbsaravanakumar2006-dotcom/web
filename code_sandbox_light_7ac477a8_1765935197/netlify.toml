@@ -1,0 +1,39 @@
+# Netlify Configuration for Currency Note Scanner
+
+[build]
+  # No build step needed for static site
+  publish = "."
+  
+[build.environment]
+  # Environment variables (if needed)
+
+[[redirects]]
+  # Redirect API calls to backend (update with your backend URL)
+  from = "/api/*"
+  to = "https://your-backend-url.com/api/:splat"
+  status = 200
+  force = true
+  
+[[headers]]
+  # Security headers
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=*, microphone=*, geolocation=()"
+    
+[[headers]]
+  # CORS headers for API
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+    
+# Custom error pages (optional)
+# [[redirects]]
+#   from = "/*"
+#   to = "/404.html"
+#   status = 404
